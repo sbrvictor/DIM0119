@@ -1,41 +1,63 @@
+/*
+ * Autor: Victor Sobrinho de Santana
+ * Disciplina: DIM0119 - Estruturas de Dados Básicas 1
+ * Exercício 7: Busca Ternária Iterativa
+ */
 #include <iostream>
+#include <vector>
 
-// Função de Busca Ternária Iterativa (exige que o array esteja ordenado)
-// Recebe um array, o valor a ser buscado e o intervalo [esq, dir)
-// Retorna o índice do elemento se encontrado, ou -1 caso contrário.
+using namespace std;
+
+// Função de Busca Ternária Iterativa (exige array ordenado)
+// Reduz o espaço de busca descartando 2/3 do array a cada repetição
 int busca_ternaria_iterativa(int arr[], int valor, int esq, int dir) {
-    // Mantém o laço enquanto o intervalo for válido
+    // Laço executa enquanto o intervalo [esq, dir) possuir elementos
     while (esq < dir) {
-        // Como 'dir' é aberto, o último índice válido é dir - 1
+        // Define o índice final válido do intervalo para auxiliar no cálculo dos terços
         int dir_inc = dir - 1;
         
-        // Calcula os dois pontos que dividem o array em três terços
+        // Quebra o array definindo dois pontos pivôs
+        // meio1 divide o primeiro terço, meio2 divide o último terço
         int meio1 = esq + (dir_inc - esq) / 3;
         int meio2 = dir_inc - (dir_inc - esq) / 3;
 
-        // Verifica se o valor está em algum dos dois pontos médios
-        if (arr[meio1] == valor) {
-            return meio1;
-        }
-        if (arr[meio2] == valor) {
-            return meio2;
-        }
+        // Compara diretamente com os dois pivôs
+        if (arr[meio1] == valor) return meio1;
+        if (arr[meio2] == valor) return meio2;
 
-        // Se o valor for menor que o primeiro ponto, busca no primeiro terço
+        // Se o valor for menor que o primeiro pivô, ele só pode estar no primeiro terço
         if (valor < arr[meio1]) {
-            dir = meio1; // Novo intervalo: [esq, meio1)
+            dir = meio1; // Ajusta limite superior para o início do array
         } 
-        // Se o valor for maior que o segundo ponto, busca no último terço
+        // Se o valor for maior que o segundo pivô, ele deve estar no último terço
         else if (valor > arr[meio2]) {
-            esq = meio2 + 1; // Novo intervalo: [meio2 + 1, dir)
+            esq = meio2 + 1; // Ajusta limite inferior para o final do array
         } 
-        // Caso contrário, o valor está no terço do meio
+        // Se não for nenhum dos extremos, o valor obrigatoriamente está no terço central
         else {
-            esq = meio1 + 1; // Novo intervalo: [meio1 + 1, meio2)
+            esq = meio1 + 1; 
             dir = meio2;
         }
     }
-    
-    // Retorna -1 se o intervalo acabar e o valor não for encontrado
+    // Caso os limites colidam sem encontrar o alvo, retorna falha
     return -1;
+}
+
+int main() {
+    int alvo, valor;
+    
+    // Captura o objetivo da busca na primeira linha de entrada
+    if (!(cin >> alvo)) return 0;
+
+    vector<int> arr;
+    
+    // Loop de leitura para compor os dados que serão avaliados
+    while (cin >> valor) {
+        arr.push_back(valor);
+    }
+
+    // Dispara a busca logarítmica de base 3
+    int resultado = busca_ternaria_iterativa(arr.data(), alvo, 0, arr.size());
+    
+    return 0;
 }

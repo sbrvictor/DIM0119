@@ -1,36 +1,61 @@
+/*
+ * Autor: Victor Sobrinho de Santana
+ * Disciplina: DIM0119 - Estruturas de Dados Básicas 1
+ * Exercício 8: Busca Ternária Recursiva
+ */
 #include <iostream>
+#include <vector>
 
-// Função de Busca Ternária Recursiva (exige que o array esteja ordenado)
-// Recebe um array, o valor a ser buscado e o intervalo [esq, dir)
-// Retorna o índice do elemento se encontrado, ou -1 caso contrário.
+using namespace std;
+
+// Função de Busca Ternária Recursiva (exige array ordenado)
+// Delega a busca para um dos três blocos menores a cada camada recursiva
 int busca_ternaria_recursiva(int arr[], int valor, int esq, int dir) {
-    // Condição de parada: se o intervalo acabar, o valor não está no array
+    // Caso base: cruzamento de limites aponta que o valor não existe no array
     if (esq >= dir) {
         return -1;
     }
 
-    // Calcula o limite direito incluído para facilitar a matemática dos terços
+    // Variável auxiliar apontando para o último índice inclusivo do bloco atual
     int dir_inc = dir - 1;
     
-    // Define os dois pontos divisores
+    // Determina matematicamente as duas quebras que separam os terços
     int meio1 = esq + (dir_inc - esq) / 3;
     int meio2 = dir_inc - (dir_inc - esq) / 3;
 
-    // Caso base de sucesso: verifica os dois pontos médios
+    // Checagem imediata nos pontos de quebra para abreviar a busca
     if (arr[meio1] == valor) return meio1;
     if (arr[meio2] == valor) return meio2;
 
-    // Passos recursivos para cada um dos três terços possíveis
+    // Se o alvo for menor que a primeira quebra, a recursão foca no bloco inferior
     if (valor < arr[meio1]) {
-        // Busca no primeiro terço
         return busca_ternaria_recursiva(arr, valor, esq, meio1);
-    } 
-    else if (valor > arr[meio2]) {
-        // Busca no último terço
-        return busca_ternaria_recursiva(arr, valor, meio2 + 1, dir);
-    } 
-    else {
-        // Busca no terço central
-        return busca_ternaria_recursiva(arr, valor, meio1 + 1, meio2);
     }
+    // Se o alvo for superior à segunda quebra, a recursão assume o bloco superior
+    else if (valor > arr[meio2]) {
+        return busca_ternaria_recursiva(arr, valor, meio2 + 1, dir);
+    }
+    
+    // Por eliminação, caso o alvo esteja ensanduichado entre meio1 e meio2,
+    // a recursão resolve apenas o bloco central.
+    return busca_ternaria_recursiva(arr, valor, meio1 + 1, meio2);
+}
+
+int main() {
+    int alvo, valor;
+    
+    // Lê e isola a chave a ser buscada no array principal
+    if (!(cin >> alvo)) return 0;
+
+    vector<int> arr;
+    
+    // Criação da lista de dados originada do arquivo de testes empíricos
+    while (cin >> valor) {
+        arr.push_back(valor);
+    }
+
+    // Invocação inicial da recursão contemplando a totalidade dos elementos
+    int resultado = busca_ternaria_recursiva(arr.data(), alvo, 0, arr.size());
+    
+    return 0;
 }
