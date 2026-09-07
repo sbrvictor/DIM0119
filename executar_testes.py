@@ -2,6 +2,7 @@ import os
 import subprocess
 import time
 import csv
+import shutil
 
 # Mapeamento dos 8 exercícios e seus respectivos nomes de arquivos .cpp
 exercicios = {
@@ -21,17 +22,29 @@ tamanhos = list(range(5, 3001, 5))
 # Quantidade de repetições exigidas para tirar a média no pior caso
 n_repeticoes = 5
 
-print("--- ETAPA 1: Compilando os programas C++ ---")
+print("--- ETAPA 1: Verificando dependências e compilando os programas C++ ---")
+
+# Verifica se o g++ está instalado no ambiente Linux/WSL
+if not shutil.which("g++"):
+    print("\n[ERRO CRÍTICO] O compilador 'g++' não foi encontrado no seu sistema.")
+    print("Por favor, instale-o executando o comando:")
+    print("  sudo apt update && sudo apt install build-essential -y\n")
+    exit(1)
+
 for num, nome in exercicios.items():
     cpp_file = f"{nome}.cpp"
-    exe_file = f"./{nome}" # No Linux/WSL usa-se ./
+    exe_file = f"./{nome}"
     
     if os.path.exists(cpp_file):
-        # Compila o arquivo C++ gerando o executado correspondente
-        subprocess.run(["g++", cpp_file, "-o", nome], check=True)
-        print(f"Compilado com sucesso: {cpp_file}")
+        try:
+            # Compila o arquivo C++ gerando o executável correspondente
+            subprocess.run(["g++", cpp_file, "-o", nome], check=True)
+            print(f"Compilado com sucesso: {cpp_file}")
+        except subprocess.CalledProcessError as e:
+            print(f"Erro ao compilar o arquivo {cpp_file}: {e}")
+            exit(1)
     else:
-        print(f"Aviso: O arquivo {cpp_file} não foi encontrado na pasta!")
+        print(f"[AVISO] O arquivo {cpp_file} não foi encontrado na pasta!")
 
 print("\n--- ETAPA 2: Executando os testes empíricos (5 repetições por tamanho) ---")
 resultados = []
