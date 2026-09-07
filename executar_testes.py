@@ -36,7 +36,7 @@ for num, nome in exercicios.items():
 print("\n--- ETAPA 2: Executando os testes empíricos (5 repetições por tamanho) ---")
 resultados = []
 
-for num, nome in exercicios.items()
+for num, nome in exercicios.items():
     exe_file = f"./{nome}"
     
     for val in tamanhos:
